@@ -94,7 +94,10 @@ class EmployeeController
         $db = Database::getConnection();
         $stmt = $db->prepare("UPDATE employees SET {$setClause} WHERE id = :id");
         $stmt->execute($updates);
-        AuditLogger::log($claims['sub'], 'employee.update', 'employee', $id, $updates);
+
+        $logDetails = $updates;
+        unset($logDetails['id']);
+        AuditLogger::log($claims['sub'], 'employee.update', 'employee', $id, $logDetails);
 
         Response::success(['updated' => true]);
     }

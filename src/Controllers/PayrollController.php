@@ -32,6 +32,14 @@ class PayrollController
         if (!$employee) {
             Response::error('NOT_FOUND', 'Active employee not found', 404);
         }
+        
+        if ($employee['salary'] === null && !isset($body['base_salary'])) {
+            Response::error(
+                'MISSING_SALARY',
+                'This employee has no salary on file. Set one via employee update, or pass base_salary manually in this request.',
+                422
+            );
+        }
 
         // Auto-fill from the employee record unless the admin explicitly overrides it
         $baseSalary = isset($body['base_salary']) && $body['base_salary'] !== ''
