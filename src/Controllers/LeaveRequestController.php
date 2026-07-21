@@ -105,7 +105,7 @@ class LeaveRequestController
         $db = Database::getConnection();
 
         // Confirm the request exists and is still pending
-        $stmt = $db->prepare('SELECT id, status FROM leave_requests WHERE id = :id');
+        $stmt = $db->prepare('SELECT id, status, employee_id FROM leave_requests WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $request = $stmt->fetch();
 
