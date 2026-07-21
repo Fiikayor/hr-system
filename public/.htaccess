@@ -1,0 +1,10 @@
+RewriteEngine On
+
+# Allow Authorization header to pass through (XAMPP/Apache sometimes strips it)
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Route everything through index.php unless it's a real file
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

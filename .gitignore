@@ -1,0 +1,18 @@
+# Environment secrets — never commit real credentials
+.env
+
+# Composer dependencies — regenerated via `composer install`, not tracked
+/vendor/
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+php_error_log
+
+# Optional: if you ever export DB dumps locally for backup, don't commit them
+*.sql.bak
