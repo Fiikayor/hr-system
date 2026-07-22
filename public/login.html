@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — HR System</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="js/tailwind-config.js"></script>
+
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .font-display { font-family: 'Space Grotesk', sans-serif; }
+  .font-mono { font-family: 'IBM Plex Mono', monospace; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ledger-glow { animation: glow 2.4s ease-in-out infinite; }
+  }
+  @keyframes glow {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+  }
+
+  input:focus-visible, button:focus-visible {
+    outline: 2px solid #C9922F;
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body class="bg-paper text-ink-text min-h-screen">
+
+<div class="min-h-screen flex flex-col md:flex-row">
+
+  <!-- Dark panel: brand + sign-in ledger signature -->
+  <div class="bg-ink text-paper md:w-[45%] flex flex-col justify-between px-8 py-10 md:px-14 md:py-14">
+    <div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-sm bg-brass flex items-center justify-center font-display font-bold text-ink text-sm">H</div>
+        <span class="font-display font-semibold tracking-wide text-lg">HR System</span>
+      </div>
+    </div>
+
+    <div class="mt-10 md:mt-0">
+      <p class="font-mono text-xs text-slate uppercase tracking-widest mb-2">Local time</p>
+      <p id="liveClock" class="font-mono text-4xl md:text-5xl text-paper tabular-nums">--:--:--</p>
+
+      <div class="mt-8 space-y-2" aria-hidden="true">
+        <div class="h-px bg-white/10"></div>
+        <div class="h-px bg-white/10"></div>
+        <div class="flex items-center gap-3 py-1">
+          <div class="h-px bg-brass flex-1 ledger-glow"></div>
+          <span class="font-mono text-[11px] text-brass-light ledger-glow">checking in</span>
+        </div>
+        <div class="h-px bg-white/10"></div>
+        <div class="h-px bg-white/10"></div>
+        <div class="h-px bg-white/10"></div>
+      </div>
+
+      <p class="font-display text-2xl md:text-3xl font-medium mt-10 leading-snug text-paper max-w-sm">
+        Every check-in,<br>recorded.
+      </p>
+      <p class="text-slate text-sm mt-3 max-w-xs">
+        Attendance, leave, payroll, and performance — one roster for the whole company.
+      </p>
+    </div>
+
+    <p class="font-mono text-[11px] text-slate">© 2026 HR System</p>
+  </div>
+
+  <!-- Paper panel: the actual form -->
+  <div class="flex-1 flex items-center justify-center px-6 py-12 md:py-0">
+    <div class="w-full max-w-sm">
+      <h1 class="font-display text-2xl font-semibold text-ink-text">Sign in</h1>
+      <p class="text-slate text-sm mt-1 mb-8">Enter your work email and password to continue.</p>
+
+      <div id="errorBanner" class="hidden mb-6 rounded-md border border-rust/30 bg-rust/5 px-4 py-3 text-sm text-rust" role="alert"></div>
+
+      <form id="loginForm" class="space-y-5" novalidate>
+        <div>
+          <label for="email" class="block text-sm font-medium text-ink-text mb-1.5">Email</label>
+          <input
+            type="email" id="email" name="email" required autocomplete="email"
+            class="w-full rounded-md border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink-text placeholder:text-slate/60 focus:border-brass transition-colors"
+            placeholder="you@company.com">
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-ink-text mb-1.5">Password</label>
+          <input
+            type="password" id="password" name="password" required autocomplete="current-password"
+            class="w-full rounded-md border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink-text placeholder:text-slate/60 focus:border-brass transition-colors"
+            placeholder="••••••••">
+        </div>
+
+        <button
+          type="submit" id="submitBtn"
+          class="w-full bg-ink text-paper font-medium text-sm rounded-md py-2.5 mt-2 hover:bg-ink-2 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+          <span id="submitLabel">Sign in</span>
+        </button>
+      </form>
+
+      <p class="text-xs text-slate mt-8">
+        Trouble signing in? Contact your HR administrator.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>
