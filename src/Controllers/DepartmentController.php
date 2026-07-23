@@ -10,18 +10,40 @@ class DepartmentController
 {
     public function index(): void
     {
-        AuthMiddleware::authenticate(); // any logged-in role can view
+        AuthMiddleware::authenticate();
 
         $db = Database::getConnection();
         $stmt = $db->query(
-            'SELECT d.id, d.name, d.description,
-                    CONCAT(e.first_name, " ", e.last_name) AS manager_name
-             FROM departments d
-             LEFT JOIN employees e ON e.id = d.manager_id
-             ORDER BY d.name'
+            'SELECT d.id, d.name, d.description, d.manager_id,
+                CONCAT(e.first_name, " ", e.last_name) AS manager_name
+         FROM departments d
+         LEFT JOIN employees e ON e.id = d.manager_id
+         ORDER BY d.name'
         );
 
         Response::success($stmt->fetchAll());
+    }
+
+    public function show(int $id): void
+    {
+        AuthMiddleware::authenticate();
+
+        $db = Database::getConnection();
+        $stmt = $db->prepare(
+            'SELECT d.id, d.name, d.description, d.manager_id,
+                CONCAT(e.first_name, " ", e.last_name) AS manager_name
+         FROM departments d
+         LEFT JOIN employees e ON e.id = d.manager_id
+         WHERE d.id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+        $department = $stmt->fetch();
+
+        if (!$department) {
+            Response::error('NOT_FOUND', 'Department not found', 404);
+        }
+
+        Response::success($department);
     }
 
     public function store(): void

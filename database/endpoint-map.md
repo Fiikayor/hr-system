@@ -1,6 +1,6 @@
 # HR System — API Endpoint Map
 
-Base URL (local): `http://localhost/hr-api/public/api`
+Base URL (local): `http://localhost:8002/hr-system/public/api`
 
 Auth: `Bearer {{token}}` header, except where marked Public.
 Roles: admin (A), manager (M), employee (E)

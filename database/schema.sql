@@ -41,6 +41,7 @@ CREATE TABLE employees (
     job_title VARCHAR(100),
     hire_date DATE,
     salary DECIMAL(12,2),
+    pay_frequency ENUM('daily','weekly','biweekly','monthly') DEFAULT 'monthly',
     status ENUM('active','inactive','terminated') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

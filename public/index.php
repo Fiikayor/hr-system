@@ -71,6 +71,7 @@ try {
 
         match (true) {
             $method === 'GET' && $id === null => $controller->index(),
+            $method === 'GET' && $id !== null => $controller->show($id),
             $method === 'POST' && $id === null => $controller->store(),
             $method === 'PUT' && $id !== null => $controller->update($id),
             $method === 'DELETE' && $id !== null => $controller->destroy($id),
