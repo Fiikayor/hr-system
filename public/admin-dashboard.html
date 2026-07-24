@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — HR System</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="js/tailwind-config.js"></script>
+
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .font-display { font-family: 'Space Grotesk', sans-serif; }
+  .font-mono { font-family: 'IBM Plex Mono', monospace; }
+  input:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid #C9922F;
+    outline-offset: 2px;
+  }
+  .nav-btn.active { background: rgba(255,255,255,0.1); color: #F5F3EE; }
+</style>
+</head>
+<body class="bg-paper text-ink-text">
+
+<div class="flex flex-col md:flex-row min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="bg-ink text-paper md:w-64 md:flex-shrink-0 flex flex-col">
+    <div class="px-6 py-6 flex items-center gap-3 border-b border-white/10">
+      <div class="w-8 h-8 rounded-sm bg-brass flex items-center justify-center font-display font-bold text-ink text-sm">H</div>
+      <span class="font-display font-semibold text-lg">HR System</span>
+    </div>
+
+    <div class="px-6 py-4 border-b border-white/10">
+      <p id="userName" class="font-medium text-sm">—</p>
+      <p id="userRole" class="text-xs text-slate uppercase tracking-wide mt-0.5 font-mono">—</p>
+    </div>
+
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto" id="navTabs">
+      <p class="px-3 pt-2 pb-1 text-[10px] uppercase tracking-widest text-slate font-mono">Personal</p>
+      <button data-tab="attendance" class="nav-btn active whitespace-nowrap w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate hover:bg-white/5 hover:text-paper transition-colors">My Attendance</button>
+      <button data-tab="leave" class="nav-btn whitespace-nowrap w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate hover:bg-white/5 hover:text-paper transition-colors">My Leave</button>
+
+      <p class="px-3 pt-4 pb-1 text-[10px] uppercase tracking-widest text-slate font-mono">Organization</p>
+      <button data-tab="employees" class="nav-btn whitespace-nowrap w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate hover:bg-white/5 hover:text-paper transition-colors">Employees</button>
+      <button data-tab="departments" class="nav-btn whitespace-nowrap w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate hover:bg-white/5 hover:text-paper transition-colors">Departments</button>
+
+      <p class="px-3 pt-4 pb-1 text-[10px] uppercase tracking-widest text-slate font-mono">Operations</p>
+      <button data-tab="orgAttendance" class="nav-btn whitespace-nowrap w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate hover:bg-white/5 hover:text-paper transition-colors">Attendance</button>
+      <button data-tab="approvals" class="nav-btn whitespace-nowrap w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate hover:bg-white/5 hover:text-paper transition-colors">Leave Approvals</button>
+      <button data-tab="payroll" class="nav-btn whitespace-nowrap w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate hover:bg-white/5 hover:text-paper transition-colors">Payroll</button>
+      <button data-tab="reviews" class="nav-btn whitespace-nowrap w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate hover:bg-white/5 hover:text-paper transition-colors">Reviews</button>
+      <button data-tab="announcements" class="nav-btn whitespace-nowrap w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate hover:bg-white/5 hover:text-paper transition-colors">Announcements</button>
+      <button data-tab="auditLogs" class="nav-btn whitespace-nowrap w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate hover:bg-white/5 hover:text-paper transition-colors">Audit Logs</button>
+    </nav>
+
+    <div class="px-3 py-4 border-t border-white/10">
+      <button id="logoutBtn" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate hover:bg-white/5 hover:text-paper transition-colors">Sign out</button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 px-6 py-8 md:px-10 md:py-10 max-w-5xl">
+    <header class="flex items-start justify-between mb-8">
+      <div>
+        <h1 id="pageTitle" class="font-display text-2xl font-semibold">My Attendance</h1>
+        <p class="text-slate text-sm mt-1" id="pageSubtitle">Check in, check out, and review your history.</p>
+      </div>
+      <p class="font-mono text-sm text-slate hidden sm:block" id="todayDate">—</p>
+    </header>
+
+    <!-- My Attendance -->
+    <section id="section-attendance" class="tab-section">
+      <div class="flex gap-3 mb-6">
+        <button id="checkInBtn" class="bg-brass text-ink font-medium text-sm px-4 py-2 rounded-md hover:bg-brass-light transition-colors">Check in</button>
+        <button id="checkOutBtn" class="bg-ink text-paper font-medium text-sm px-4 py-2 rounded-md hover:bg-ink-2 transition-colors">Check out</button>
+      </div>
+      <p id="attendanceMsg" class="hidden mb-4 text-sm"></p>
+      <div class="bg-white rounded-lg border border-ink/10 overflow-hidden overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-paper-2 text-left text-xs uppercase tracking-wide text-slate">
+            <tr><th class="px-4 py-3 font-medium">Check in</th><th class="px-4 py-3 font-medium">Check out</th><th class="px-4 py-3 font-medium">Status</th></tr>
+          </thead>
+          <tbody id="attendanceTable" class="divide-y divide-ink/5 font-mono text-xs"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- My Leave -->
+    <section id="section-leave" class="tab-section hidden">
+      <form id="leaveForm" class="bg-white border border-ink/10 rounded-lg p-5 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Leave type</label>
+          <select id="leaveType" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+            <option value="1">Annual</option>
+            <option value="2">Sick</option>
+            <option value="3">Unpaid</option>
+          </select>
+        </div>
+        <div></div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Start date</label>
+          <input type="date" id="leaveStart" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">End date</label>
+          <input type="date" id="leaveEnd" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-xs font-medium text-slate mb-1">Reason (optional)</label>
+          <textarea id="leaveReason" rows="2" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm"></textarea>
+        </div>
+        <div class="md:col-span-2 flex items-center gap-3">
+          <button type="submit" class="bg-brass text-ink font-medium text-sm px-4 py-2 rounded-md hover:bg-brass-light transition-colors">Submit request</button>
+          <span id="leaveMsg" class="text-sm hidden"></span>
+        </div>
+      </form>
+      <div class="bg-white rounded-lg border border-ink/10 overflow-hidden overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-paper-2 text-left text-xs uppercase tracking-wide text-slate">
+            <tr><th class="px-4 py-3 font-medium">Type</th><th class="px-4 py-3 font-medium">Dates</th><th class="px-4 py-3 font-medium">Status</th></tr>
+          </thead>
+          <tbody id="leaveTable" class="divide-y divide-ink/5"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Employees -->
+    <section id="section-employees" class="tab-section hidden">
+      <div class="flex justify-end mb-4">
+        <button id="addEmployeeBtn" class="bg-brass text-ink font-medium text-sm px-4 py-2 rounded-md hover:bg-brass-light transition-colors">+ Add employee</button>
+      </div>
+      <div class="bg-white rounded-lg border border-ink/10 overflow-hidden overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-paper-2 text-left text-xs uppercase tracking-wide text-slate">
+            <tr><th class="px-4 py-3 font-medium">Name</th><th class="px-4 py-3 font-medium">Role</th><th class="px-4 py-3 font-medium">Department</th><th class="px-4 py-3 font-medium">Status</th><th class="px-4 py-3 font-medium"></th></tr>
+          </thead>
+          <tbody id="employeesTable" class="divide-y divide-ink/5"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Departments -->
+    <section id="section-departments" class="tab-section hidden">
+      <div class="flex justify-end mb-4">
+        <button id="addDepartmentBtn" class="bg-brass text-ink font-medium text-sm px-4 py-2 rounded-md hover:bg-brass-light transition-colors">+ Add department</button>
+      </div>
+      <div class="bg-white rounded-lg border border-ink/10 overflow-hidden overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-paper-2 text-left text-xs uppercase tracking-wide text-slate">
+            <tr><th class="px-4 py-3 font-medium">Name</th><th class="px-4 py-3 font-medium">Manager</th><th class="px-4 py-3 font-medium">Description</th><th class="px-4 py-3 font-medium"></th></tr>
+          </thead>
+          <tbody id="departmentsTable" class="divide-y divide-ink/5"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Org-wide Attendance -->
+    <section id="section-orgAttendance" class="tab-section hidden">
+      <div class="bg-white rounded-lg border border-ink/10 overflow-hidden overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-paper-2 text-left text-xs uppercase tracking-wide text-slate">
+            <tr><th class="px-4 py-3 font-medium">Employee</th><th class="px-4 py-3 font-medium">Check in</th><th class="px-4 py-3 font-medium">Check out</th><th class="px-4 py-3 font-medium">Status</th></tr>
+          </thead>
+          <tbody id="orgAttendanceTable" class="divide-y divide-ink/5 font-mono text-xs"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Leave Approvals -->
+    <section id="section-approvals" class="tab-section hidden">
+      <div class="bg-white rounded-lg border border-ink/10 overflow-hidden overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-paper-2 text-left text-xs uppercase tracking-wide text-slate">
+            <tr><th class="px-4 py-3 font-medium">Employee</th><th class="px-4 py-3 font-medium">Type</th><th class="px-4 py-3 font-medium">Dates</th><th class="px-4 py-3 font-medium">Status</th><th class="px-4 py-3 font-medium"></th></tr>
+          </thead>
+          <tbody id="approvalsTable" class="divide-y divide-ink/5"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Payroll -->
+    <section id="section-payroll" class="tab-section hidden">
+      <form id="payrollForm" class="bg-white border border-ink/10 rounded-lg p-5 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Employee</label>
+          <select id="payrollEmployee" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm"></select>
+        </div>
+        <div></div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Period start</label>
+          <input type="date" id="payrollStart" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Period end</label>
+          <input type="date" id="payrollEnd" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Base salary (optional override)</label>
+          <input type="number" step="0.01" id="payrollBaseSalary" placeholder="auto-filled if blank" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+        <div></div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Bonuses</label>
+          <input type="number" step="0.01" id="payrollBonuses" value="0" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Deductions</label>
+          <input type="number" step="0.01" id="payrollDeductions" value="0" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+        <div class="md:col-span-2 flex items-center gap-3">
+          <button type="submit" class="bg-brass text-ink font-medium text-sm px-4 py-2 rounded-md hover:bg-brass-light transition-colors">Generate payroll</button>
+          <span id="payrollMsg" class="text-sm hidden"></span>
+        </div>
+      </form>
+      <div class="bg-white rounded-lg border border-ink/10 overflow-hidden overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-paper-2 text-left text-xs uppercase tracking-wide text-slate">
+            <tr><th class="px-4 py-3 font-medium">Employee</th><th class="px-4 py-3 font-medium">Period</th><th class="px-4 py-3 font-medium">Net pay</th><th class="px-4 py-3 font-medium">Status</th><th class="px-4 py-3 font-medium"></th></tr>
+          </thead>
+          <tbody id="payrollTable" class="divide-y divide-ink/5"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Reviews -->
+    <section id="section-reviews" class="tab-section hidden">
+      <form id="reviewForm" class="bg-white border border-ink/10 rounded-lg p-5 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Employee</label>
+          <select id="reviewEmployee" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Review period</label>
+          <input type="text" id="reviewPeriod" placeholder="e.g. Q3 2026" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Rating (0–5)</label>
+          <input type="number" id="reviewRating" min="0" max="5" step="0.1" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+        <div></div>
+        <div class="md:col-span-2">
+          <label class="block text-xs font-medium text-slate mb-1">Strengths</label>
+          <textarea id="reviewStrengths" rows="2" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm"></textarea>
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-xs font-medium text-slate mb-1">Areas to improve</label>
+          <textarea id="reviewImprovements" rows="2" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm"></textarea>
+        </div>
+        <div class="md:col-span-2 flex items-center gap-3">
+          <button type="submit" class="bg-brass text-ink font-medium text-sm px-4 py-2 rounded-md hover:bg-brass-light transition-colors">Submit review</button>
+          <span id="reviewMsg" class="text-sm hidden"></span>
+        </div>
+      </form>
+      <div id="reviewsList" class="space-y-4"></div>
+    </section>
+
+    <!-- Announcements -->
+    <section id="section-announcements" class="tab-section hidden">
+      <form id="announcementForm" class="bg-white border border-ink/10 rounded-lg p-5 mb-6 space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Title</label>
+          <input type="text" id="announceTitle" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Message</label>
+          <textarea id="announceBody" rows="3" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Department (leave blank for company-wide)</label>
+          <select id="announceDepartment" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+            <option value="">Company-wide</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-3">
+          <button type="submit" class="bg-brass text-ink font-medium text-sm px-4 py-2 rounded-md hover:bg-brass-light transition-colors">Post announcement</button>
+          <span id="announceMsg" class="text-sm hidden"></span>
+        </div>
+      </form>
+      <div id="announcementsList" class="space-y-4"></div>
+    </section>
+
+    <!-- Audit Logs -->
+    <section id="section-auditLogs" class="tab-section hidden">
+      <div class="bg-white rounded-lg border border-ink/10 overflow-hidden overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-paper-2 text-left text-xs uppercase tracking-wide text-slate">
+            <tr><th class="px-4 py-3 font-medium">Time</th><th class="px-4 py-3 font-medium">Actor</th><th class="px-4 py-3 font-medium">Action</th><th class="px-4 py-3 font-medium">Entity</th><th class="px-4 py-3 font-medium">Details</th></tr>
+          </thead>
+          <tbody id="auditTable" class="divide-y divide-ink/5 font-mono text-xs"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Employee modal -->
+<div id="employeeModal" class="hidden fixed inset-0 bg-ink/50 flex items-center justify-center px-4 z-50">
+  <div class="bg-paper rounded-lg max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
+    <h2 id="employeeModalTitle" class="font-display text-lg font-semibold mb-4">Add employee</h2>
+    <form id="employeeForm" class="space-y-4">
+      <input type="hidden" id="employeeId">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">First name</label>
+          <input type="text" id="empFirstName" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Last name</label>
+          <input type="text" id="empLastName" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+        </div>
+      </div>
+      <div id="empEmailWrap">
+        <label class="block text-xs font-medium text-slate mb-1">Email</label>
+        <input type="email" id="empEmail" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+      </div>
+      <div id="empPasswordWrap">
+        <label class="block text-xs font-medium text-slate mb-1">Password</label>
+        <input type="password" id="empPassword" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Role</label>
+          <select id="empRole" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+            <option value="1">Admin</option>
+            <option value="2">Manager</option>
+            <option value="3" selected>Employee</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate mb-1">Department</label>
+          <select id="empDepartment" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm"></select>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-slate mb-1">Job title</label>
+        <input type="text" id="empJobTitle" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+      </div>
+      <div id="empSalaryWrap" class="hidden">
+        <label class="block text-xs font-medium text-slate mb-1">Salary</label>
+        <input type="number" step="0.01" id="empSalary" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+      </div>
+      <div id="empStatusWrap" class="hidden">
+        <label class="block text-xs font-medium text-slate mb-1">Status</label>
+        <select id="empStatus" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="terminated">Terminated</option>
+        </select>
+      </div>
+      <p id="employeeFormMsg" class="hidden text-sm"></p>
+      <div class="flex items-center gap-3 pt-2">
+        <button type="submit" class="bg-brass text-ink font-medium text-sm px-4 py-2 rounded-md hover:bg-brass-light transition-colors">Save</button>
+        <button type="button" id="employeeModalCancel" class="text-slate text-sm hover:text-ink-text">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Department modal -->
+<div id="departmentModal" class="hidden fixed inset-0 bg-ink/50 flex items-center justify-center px-4 z-50">
+  <div class="bg-paper rounded-lg max-w-md w-full p-6">
+    <h2 id="departmentModalTitle" class="font-display text-lg font-semibold mb-4">Add department</h2>
+    <form id="departmentForm" class="space-y-4">
+      <input type="hidden" id="departmentId">
+      <div>
+        <label class="block text-xs font-medium text-slate mb-1">Name</label>
+        <input type="text" id="deptName" required class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-slate mb-1">Description</label>
+        <textarea id="deptDescription" rows="2" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-slate mb-1">Manager (optional)</label>
+        <select id="deptManager" class="w-full border border-ink/15 rounded-md px-3 py-2 text-sm">
+          <option value="">None</option>
+        </select>
+      </div>
+      <p id="departmentFormMsg" class="hidden text-sm"></p>
+      <div class="flex items-center gap-3 pt-2">
+        <button type="submit" class="bg-brass text-ink font-medium text-sm px-4 py-2 rounded-md hover:bg-brass-light transition-colors">Save</button>
+        <button type="button" id="departmentModalCancel" class="text-slate text-sm hover:text-ink-text">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/admin-dashboard.js"></script>
+</body>
+</html>
